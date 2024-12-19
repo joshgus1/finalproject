@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tetris</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #222;
+            margin: 0;
+            font-family: sans-serif;
+            flex-direction: column;
+        }
+        canvas {
+            border: 2px solid #fff;
+            background-color: #000;
+        }
+        .score {
+            position: absolute;
+            color: white;
+            top: 10px;
+            left: 10px;
+            font-size: 20px;
+        }
+        #startBtn, #pauseBtn, #resetBtn, #menuBtn {
+            margin-top: 20px;
+            padding: 10px 20px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        #pauseBtn, #resetBtn, #menuBtn {
+            background-color: #f39c12;
+        }
+        #pauseBtn:disabled, #resetBtn:disabled, #menuBtn:disabled {
+            background-color: #ccc;
+        }
+        #menu {
+            display: flex;
+            justify-content: space-between;
+            position: absolute;
+            top: 10px;
+            right: 10px;
+        }
+        #menuOptions {
+            display: none;
+            flex-direction: column;
+            position: absolute;
+            top: 40px;
+            right: 10px;
+            background-color: #333;
+            padding: 10px;
+            color: white;
+            border: 1px solid #fff;
+        }
+        #menuOptions button {
+            background-color: #444;
+            color: white;
+            margin: 5px 0;
+            padding: 10px;
+            border: none;
+            cursor: pointer;
+        }
+        #menuOptions button:hover {
+            background-color: #555;
+        }
+    </style>
+</head>
+<body>
+    <canvas id="gameCanvas" width="300" height="600"></canvas>
+    <div class="score">Score: <span id="score">0</span></div>
+
+    <div id="menu">
+        <button id="menuBtn" style="border-radius: 8px;">Menu</button>
+        <div id="menuOptions">
+            <button><a href="../index.html" style="color: white; text-decoration: none;">Home</a></button>
+            <button><a href="../html/scratch.html" style="color: white; text-decoration: none;">Scratch</a></button>
+            <button><a href="../html/aiweb.html" style="color: white; text-decoration: none;">Web App</a></button>
+        </div>
+    </div>
+
+    <div id="gamePage">
+        <button id="startBtn">Start Game</button>
+        <button id="pauseBtn" disabled>Pause Game</button>
+        <button id="resetBtn" disabled>Reset Game</button>
+    </div>
+    <div id="instructionsPage" style="display: none;">
+        <h2>Instructions</h2>
+        <p>Use the arrow keys to move and rotate the falling pieces.</p>
+        <p><strong>Arrow Left:</strong> Move left</p>
+        <p><strong>Arrow Right:</strong> Move right</p>
+        <p><strong>Arrow Down:</strong> Move down</p>
+        <p><strong>Arrow Up:</strong> Rotate</p>
+        <p><strong>p:</strong> Pause/Resume the game</p>
+        <button onclick="showPage('game')">Back to Game</button>
+    </div>
+    <div id="settingsPage" style="display: none;">
+        <h2>Settings</h2>
+        <p>Settings options will be available soon.</p>
+        <button onclick="showPage('game')">Back to Game</button>
+    </div>
+
+    <script>
+        const canvas = document.getElementById("gameCanvas");
+        const ctx = canvas.getContext("2d");
+        const rows = 20;
+        const columns = 10;
+        const blockSize = 30;
+
+        const shapes = [
+            [[1, 1, 1, 1]], // I shape
+            [[1, 1, 0], [0, 1, 1]], // S shape
+            [[0, 1, 1], [1, 1, 0]], // Z shape
+            [[1, 1], [1, 1]], // O shape
+            [[1, 0, 0], [1, 1, 1]], // L shape
+            [[0, 0, 1], [1, 1, 1]], // J shape
+            [[1, 1, 1], [0, 1, 0]] // T shape
+        ];
+        const colors = ["cyan", "green", "red", "yellow", "blue", "orange", "purple"];
+
+        let board, currentShape, gameInterval, score = 0, gameRunning = false, gamePaused = false, level = 1;
+        let dropSpeed = 500;
+
+        function randomShape() {
+            const index = Math.floor(Math.random() * shapes.length);
+            return {
+                shape: shapes[index],
+                color: colors[index],
+                x: Math.floor(columns / 2) - Math.floor(shapes[index][0].length / 2),
+                y: 0
+            };
+        }
+
+        function initializeBoard() {
+            board = Array.from({ length: rows }, () => Array(columns).fill(null));
+        }
+
+        function drawBoard() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            for (let row = 0; row < rows; row++) {
+                for (let col = 0; col < columns; col++) {
+                    if (board[row][col]) {
+                        ctx.fillStyle = board[row][col];
+                        ctx.fillRect(col * blockSize, row * blockSize, blockSize, blockSize);
+                    }
+                }
+            }
+        }
+
+        function drawShape() {
+            for (let row = 0; row < currentShape.shape.length; row++) {
+                for (let col = 0; col < currentShape.shape[row].length; col++) {
+                    if (currentShape.shape[row][col]) {
+                        ctx.fillStyle = currentShape.color;
+                        ctx.fillRect(
+                            (currentShape.x + col) * blockSize,
+                            (currentShape.y + row) * blockSize,
+                            blockSize,
+                            blockSize
+                        );
+                    }
+                }
+            }
+        }
+
+        function drawShadow() {
+            let shadowY = currentShape.y;
+            while (isValidMove(currentShape.shape, currentShape.x, shadowY + 1)) {
+                shadowY++;
+            }
+            for (let row = 0; row < currentShape.shape.length; row++) {
+                for (let col = 0; col < currentShape.shape[row].length; col++) {
+                    if (currentShape.shape[row][col]) {
+                        ctx.fillStyle = "rgba(0,0,0,0.5)";
+                        ctx.fillRect(
+                            (currentShape.x + col) * blockSize,
+                            (shadowY + row) * blockSize,
+                            blockSize,
+                            blockSize
+                        );
+                    }
+                }
+            }
+        }
+
+        function isValidMove(shape, x, y) {
+            for (let row = 0; row < shape.length; row++) {
+                for (let col = 0; col < shape[row].length; col++) {
+                    if (shape[row][col]) {
+                        const newX = x + col;
+                        const newY = y + row;
+                        if (newX < 0 || newX >= columns || newY >= rows || board[newY] && board[newY][newX]) {
+                            return false;
+                        }
+                    }
+                }
+            }
+            return true;
+        }
+
+        function placeShape() {
+            for (let row = 0; row < currentShape.shape.length; row++) {
+                for (let col = 0; col < currentShape.shape[row].length; col++) {
+                    if (currentShape.shape[row][col]) {
+                        board[currentShape.y + row][currentShape.x + col] = currentShape.color;
+                    }
+                }
+            }
+            checkLines();
+            currentShape = randomShape();
+            if (!isValidMove(currentShape.shape, currentShape.x, currentShape.y)) {
+                clearInterval(gameInterval);
+                alert("Game Over!");
+                gameRunning = false;
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("pauseBtn").disabled = true;
+                document.getElementById("resetBtn").disabled = true;
+            }
+        }
+
+        function checkLines() {
+            for (let row = 0; row < rows; row++) {
+                if (board[row].every(cell => cell !== null)) {
+                    board.splice(row, 1);
+                    board.unshift(Array(columns).fill(null));
+                    score += 10;
+                    document.getElementById("score").textContent = score;
+                }
+            }
+            if (score >= level * 100) {
+                level++;
+                dropSpeed = Math.max(100, dropSpeed - 50);
+            }
+        }
+
+        function rotateShape() {
+            const rotatedShape = currentShape.shape[0].map((_, i) => currentShape.shape.map(row => row[i])).reverse();
+            if (isValidMove(rotatedShape, currentShape.x, currentShape.y)) {
+                currentShape.shape = rotatedShape;
+            }
+        }
+
+        function moveShape(dx, dy) {
+            if (isValidMove(currentShape.shape, currentShape.x + dx, currentShape.y + dy)) {
+                currentShape.x += dx;
+                currentShape.y += dy;
+            }
+        }
+
+        function gameLoop() {
+            if (!gamePaused) {
+                if (isValidMove(currentShape.shape, currentShape.x, currentShape.y + 1)) {
+                    currentShape.y++;
+                } else {
+                    placeShape();
+                }
+                drawBoard();
+                drawShape();
+                drawShadow();
+            }
+        }
+
+        function handleKeyPress(e) {
+            if (!gameRunning || gamePaused) return;
+            if (e.key === "ArrowLeft") {
+                moveShape(-1, 0);
+            } else if (e.key === "ArrowRight") {
+                moveShape(1, 0);
+            } else if (e.key === "ArrowDown") {
+                moveShape(0, 1);
+            } else if (e.key === "ArrowUp") {
+                rotateShape();
+            } else if (e.key === "p") {
+                togglePause();
+            }
+        }
+
+        function togglePause() {
+            gamePaused = !gamePaused;
+            if (gamePaused) {
+                clearInterval(gameInterval);
+                document.getElementById("pauseBtn").textContent = "Resume Game";
+            } else {
+                gameInterval = setInterval(gameLoop, dropSpeed);
+                document.getElementById("pauseBtn").textContent = "Pause Game";
+            }
+        }
+
+        function startGame() {
+            if (gameRunning) {
+                return; // Prevent starting the game if it's already running
+            }
+
+            initializeBoard();
+            currentShape = randomShape();
+            score = 0;
+            document.getElementById("score").textContent = score;
+            gameRunning = true;
+            gamePaused = false;
+            document.getElementById("startBtn").disabled = true;
+            document.getElementById("pauseBtn").disabled = false;
+            document.getElementById("resetBtn").disabled = false;
+            document.getElementById("pauseBtn").textContent = "Pause Game";
+
+            gameInterval = setInterval(gameLoop, dropSpeed);
+        }
+
+        function resetGame() {
+            clearInterval(gameInterval);
+            gameRunning = false;
+            gamePaused = false;
+            score = 0;
+            document.getElementById("score").textContent = score;
+            document.getElementById("startBtn").disabled = false;
+            document.getElementById("pauseBtn").disabled = true;
+            document.getElementById("resetBtn").disabled = true;
+        }
+
+        document.getElementById("startBtn").addEventListener("click", startGame);
+        document.getElementById("pauseBtn").addEventListener("click", togglePause);
+        document.getElementById("resetBtn").addEventListener("click", resetGame);
+        document.getElementById("menuBtn").addEventListener("click", () => {
+            const menuOptions = document.getElementById("menuOptions");
+            menuOptions.style.display = menuOptions.style.display === "none" || menuOptions.style.display === "" ? "flex" : "none";
+        });
+        window.addEventListener("keydown", handleKeyPress);
+    </script>
+</body>
+</html>

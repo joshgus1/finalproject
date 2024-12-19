@@ -1,0 +1,172 @@
+.mystyleclass{
+    background-color: white!important;
+    color: rgb(5, 5, 5) !important;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+padding-bottom: 20px;
+}
+.mystyleclass2{
+ padding-left: 12px;
+ margin: auto;
+}
+
+.main-content{
+    border-color: antiquewhite;
+    color: black;
+    display: flex;
+    flex-direction: column; /* Stacks content vertically */
+    font-size:50px;
+    text-align: center;
+
+}
+/* Dropdown Button */
+.dropdown-btn {
+    background-color: #333;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    border-radius: 5px;
+}
+
+/* Dropdown Menu */
+.dropdown-menu {
+    display: none; 
+    position: absolute;
+    background-color: #333;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    border-radius: 5px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+    padding: 10px;
+    z-index: 1000;
+}
+
+.dropdown-menu ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.dropdown-menu ul li {
+    margin: 5px 0;
+}
+
+.dropdown-menu ul li a {
+    background-color:#333 ;
+    color: white;
+    text-decoration: none;
+    padding: 5px 10px;
+    display: block;
+    border-radius: 3px;
+}
+
+.dropdown-menu ul li a:hover {
+    background-color: #444;
+}
+.menu{
+    text-align:center;
+    color: white;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-size: 1rem;
+    font-weight: bold;
+    font-weight: 800;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+    display: block;
+    padding: var(--bs-nav-link-padding-y)
+    text-decoration: none;
+    transition: color 0.15s ease-in-out, background-color 0.15s ease-in-out, border-color 0.15s ease-in-out;
+}
+
+h1{
+    color: black;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-size: 60;
+    background-color: whitesmoke;
+    border-radius: 8px;
+    width: 1040px;
+    
+}
+
+h2, h3, h4, h5, h6 {
+    color: black;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    text-align: left;
+}
+
+h7 {
+    margin-top: 5px;
+    color: black;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    text-align: left;
+    font-weight: bold;
+}
+
+.unordered-list{
+    color: black;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    font-size: 40px;
+    font-weight: bold;
+}
+
+.section-1{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin top: 5px;
+
+    
+}
+
+.section-2{
+    font-size: 50px;
+    padding-top: 0;
+    padding-bottom: 0;
+    width: 80%;
+    max-width: 1000px
+    margin-top: 5px
+}
+
+.section-3{
+    font-size: 20px;
+    background-color: whitesmoke;
+    font-family: Muli, -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Helvetica Neue, Arial, sans-serif, Apple Color Emoji, Segoe UI Emoji, Segoe UI Symbol, Noto Color Emoji;
+    width: 80%; /* Adjust width to make the box smaller */
+    max-width: 1000px; /* Optional: Set a maximum width for responsiveness */
+    margin: 0 auto; /* Centers the box horizontally */
+    padding: 20px; /* Adds spacing inside the box */
+    padding-top: 3px;
+    border-radius: 8px; /* Optional: Adds rounded corners */
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); /* Optional: Adds a subtle shadow */
+    margin-top: 5px;
+} 
+.image-class {
+    width: 100%; /* Make the image fill the container */
+    height: auto; /* Maintain aspect ratio */
+    max-width: 800px; /* Optional: Limit maximum width */
+    display: block; /* Prevent inline spacing issues */
+    margin: 0 auto; /* Center the image */
+    justify-content: center;
+    align-items: center;
+}
+
+    .image-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    img {
+        max-width: 100%;
+        height: auto;
+    }
+
+.heading-indent{
+  padding-left: 20px; /* Adjust the value to control the indentation */
+    text-indent: 10px;  /* Optional: Indents the first line of text */
+    line-height: 1.5; 
+    margin-top: 5px;
+}  
+.experience-style{ !important
+    font-size: 16px;
+}
